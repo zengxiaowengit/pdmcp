@@ -23,6 +23,32 @@
 	<context:component-scan base-package="com.hackathon" >
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/> 
 	</context:component-scan>
-	
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${username}"></property>
+		<property name="password" value="${password}"></property>
+		<property name="initialSize" value="${initialSize}"></property>
+		<property name="maxActive" value="${maxActive}"></property>
+		<property name="maxIdle" value="${maxIdle}"></property>
+		<property name="minIdle" value="${minIdle}"></property>
+		<property name="maxWait" value="${maxWait}"></property>
+		<property name="filters" value="stat"></property>
+	</bean>
 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<!--mapping.xml 文件 -->
+		<property name="mapperLocations" value="classpath:com/hackathon/*.xml"></property>
+		<property name="configLocation" value="classpath:mybatisPage-myconfig.xml"></property>
+	</bean>
+	<!-- dao接口所在包名 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hackathon.mapping"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<bean id="tx" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
 </beans>
